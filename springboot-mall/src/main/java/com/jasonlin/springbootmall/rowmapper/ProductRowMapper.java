@@ -1,5 +1,6 @@
 package com.jasonlin.springbootmall.rowmapper;
 
+import com.jasonlin.springbootmall.constant.ProductCategory;
 import com.jasonlin.springbootmall.model.Product;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -15,7 +16,12 @@ public class ProductRowMapper implements RowMapper <Product> {
         product.setProductId(resultSet.getInt("product_id"));
         product.setProductName(resultSet.getString("product_name"));
 
-        product.setCategory(resultSet.getString("category"));
+
+        String categoryStr =resultSet.getString("category");
+        ProductCategory category = ProductCategory.valueOf(categoryStr);
+        product.setCategory(category);
+        //上面三行也可以合併成下面一行
+       // product.setCategory(ProductCategory.valueOf(resultSet.getString("category")));
 
         product.setImageUrl(resultSet.getString("image_url"));
         product.setPrice(resultSet.getInt("price"));

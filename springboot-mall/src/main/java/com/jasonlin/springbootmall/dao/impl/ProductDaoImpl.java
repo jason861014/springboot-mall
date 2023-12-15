@@ -1,7 +1,7 @@
 package com.jasonlin.springbootmall.dao.impl;
 
-import com.jasonlin.springbootmall.constant.ProductCategory;
 import com.jasonlin.springbootmall.dao.ProductDao;
+import com.jasonlin.springbootmall.dto.ProductQueryParams;
 import com.jasonlin.springbootmall.dto.ProductRequest;
 import com.jasonlin.springbootmall.model.Product;
 import com.jasonlin.springbootmall.rowmapper.ProductRowMapper;
@@ -24,20 +24,20 @@ public class ProductDaoImpl implements ProductDao {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public List<Product> getProducts(ProductCategory category, String search) {
+    public List<Product> getProducts(ProductQueryParams productQueryParams) {
         String sql = "SELECT product_id, product_name, category, image_url, price, stock, description, created_date, last_modified_date FROM product WHERE 1=1";
 
         Map<String, Object> map = new HashMap<>();
 
-        if (category != null){
+        if (productQueryParams.getCategory() != null){
             //重要!!AND前面一定要用空白見不然無法跟SELECT之後的語句拼接
             sql = sql +" AND category = :category";
-            map.put("category", category.name());
+            map.put("category", productQueryParams.getCategory().name());
         }
 //%NAME%表示在商品裡面只要有蘋果這兩個字即會被搜尋
-        if (search != null){
+        if (productQueryParams.getSearch() != null){
             sql = sql +" AND product_name LIKE :search";
-            map.put("search", "%" + search + "%");
+            map.put("search", "%" + productQueryParams.getSearch() + "%");
         }
 
         List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());

@@ -1,5 +1,6 @@
 package com.jasonlin.springbootmall.controller;
 
+import com.jasonlin.springbootmall.constant.ProductCategory;
 import com.jasonlin.springbootmall.dto.ProductRequest;
 import com.jasonlin.springbootmall.model.Product;
 import com.jasonlin.springbootmall.service.ProductService;
@@ -17,16 +18,18 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts() {
+    public ResponseEntity<List<Product>> getProducts(
+            //前端可以透過這個參數去查詢哪個類別的商品
+            //required=false 代表前端不一定只能搜尋category這個參數 而是可以搜尋全部而不會出現錯誤
+            //@Requestparam表示從url路徑去請求參數
+            @RequestParam(required = false) ProductCategory category,
+            @RequestParam(required = false) String search
+) {
 
-       List<Product> productList =  productService.getProducts();
+       List<Product> productList =  productService.getProducts(category, search);
 
        return ResponseEntity.status(HttpStatus.OK).body(productList);
     }
-
-
-
-
 
 
     @GetMapping("/products/{productId}")

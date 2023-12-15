@@ -21,15 +21,25 @@ public class ProductController {
     private ProductService productService;
 @GetMapping("/products")
     public ResponseEntity<List<Product>> getProducts(
+            //查詢條件 Filtering
             //前端可以透過這個參數去查詢哪個類別的商品
             //required=false 代表前端不一定只能搜尋category這個參數 而是可以搜尋全部而不會出現錯誤
             //@Requestparam表示從url路徑去請求參數
             @RequestParam(required = false) ProductCategory category,
-            @RequestParam(required = false) String search
+            @RequestParam(required = false) String search,
+            //排序 Sorting
+            //orderBy表示根據什麼欄位來排序,ex:商品價格，時間等等
+            //created_date表示若前端沒有傳遞要求參數，則顯示預設值(可能是商品最新上架日期)
+            @RequestParam(defaultValue = "created_date") String orderBy,
+            //sort 用升序或是降序來排序由小到大或反之
+            //desc預設使用降序 (對商品進行大到小排序)
+            @RequestParam(defaultValue = "desc") String sort
 ) {
     ProductQueryParams productQueryParams = new ProductQueryParams();
     productQueryParams.setCategory(category);
     productQueryParams.setSearch(search);
+    productQueryParams.setOrderBy(orderBy);
+    productQueryParams.setSort(sort);
 
        List<Product> productList =  productService.getProducts(productQueryParams);
 

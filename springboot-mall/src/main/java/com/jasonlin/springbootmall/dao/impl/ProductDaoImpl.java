@@ -28,7 +28,7 @@ public class ProductDaoImpl implements ProductDao {
         String sql = "SELECT product_id, product_name, category, image_url, price, stock, description, created_date, last_modified_date FROM product WHERE 1=1";
 
         Map<String, Object> map = new HashMap<>();
-
+//查詢條件
         if (productQueryParams.getCategory() != null){
             //重要!!AND前面一定要用空白見不然無法跟SELECT之後的語句拼接
             sql = sql +" AND category = :category";
@@ -39,8 +39,13 @@ public class ProductDaoImpl implements ProductDao {
             sql = sql +" AND product_name LIKE :search";
             map.put("search", "%" + productQueryParams.getSearch() + "%");
         }
+//排序
 //ORDER BY 前後ㄧ定要預留空格 否則會黏在一起
         sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
+//分頁
+        sql = sql + " LIMIT :limit OFFSET :offset";
+        map.put("limit", productQueryParams.getLimit());
+        map.put("offset", productQueryParams.getOffset());
 
         List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
         return productList;

@@ -29,16 +29,8 @@ public class ProductDaoImpl implements ProductDao {
 
         Map<String, Object> map = new HashMap<>();
 //查詢條件
-        if (productQueryParams.getCategory() != null){
-            //重要!!AND前面一定要用空白見不然無法跟SELECT之後的語句拼接
-            sql = sql +" AND category = :category";
-            map.put("category", productQueryParams.getCategory().name());
-        }
-//%NAME%表示在商品裡面只要有蘋果這兩個字即會被搜尋
-        if (productQueryParams.getSearch() != null){
-            sql = sql +" AND product_name LIKE :search";
-            map.put("search", "%" + productQueryParams.getSearch() + "%");
-        }
+        sql = addFilteringSql(sql, map, productQueryParams);
+
      Integer total = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
         return total;
     }
@@ -49,16 +41,7 @@ public class ProductDaoImpl implements ProductDao {
 
         Map<String, Object> map = new HashMap<>();
 //查詢條件
-        if (productQueryParams.getCategory() != null){
-            //重要!!AND前面一定要用空白見不然無法跟SELECT之後的語句拼接
-            sql = sql +" AND category = :category";
-            map.put("category", productQueryParams.getCategory().name());
-        }
-//%NAME%表示在商品裡面只要有蘋果這兩個字即會被搜尋
-        if (productQueryParams.getSearch() != null){
-            sql = sql +" AND product_name LIKE :search";
-            map.put("search", "%" + productQueryParams.getSearch() + "%");
-        }
+    sql = addFilteringSql(sql, map, productQueryParams);
 //排序
 //ORDER BY 前後ㄧ定要預留空格 否則會黏在一起
         sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
@@ -147,4 +130,20 @@ public class ProductDaoImpl implements ProductDao {
 
         namedParameterJdbcTemplate.update(sql, map);
     }
+//將查詢條件整合成addFilteringSql,這樣重複的地方就能透過這邊來解決
+    private String addFilteringSql(String sql, Map<String, Object> map, ProductQueryParams productQueryParams){
+        if (productQueryParams.getCategory() != null){
+            //重要!!AND前面一定要用空白見不然無法跟SELECT之後的語句拼接
+            sql = sql +" AND category = :category";
+            map.put("category", productQueryParams.getCategory().name());
+        }
+//%NAME%表示在商品裡面只要有蘋果這兩個字即會被搜尋
+        if (productQueryParams.getSearch() != null){
+            sql = sql +" AND product_name LIKE :search";
+            map.put("search", "%" + productQueryParams.getSearch() + "%");
+        }
+
+        return  sql;
+    }
+
 }

@@ -5,6 +5,7 @@ import com.jasonlin.springbootmall.dto.ProductQueryParams;
 import com.jasonlin.springbootmall.dto.ProductRequest;
 import com.jasonlin.springbootmall.model.Product;
 import com.jasonlin.springbootmall.service.ProductService;
+import com.jasonlin.springbootmall.util.Page;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -23,7 +24,7 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts(
+    public ResponseEntity<Page<Product>> getProducts(
             //查詢條件 Filtering
             //前端可以透過這個參數去查詢哪個類別的商品
             //required=false 代表前端不一定只能搜尋category這個參數 而是可以搜尋全部而不會出現錯誤
@@ -49,10 +50,18 @@ public class ProductController {
     productQueryParams.setSort(sort);
     productQueryParams.setLimit(limit);
     productQueryParams.setOffset(offset);
+//取得 product List
+  List<Product> productList = productService.getProducts(productQueryParams);
+//取得 Product 總數
+  Integer total = productService.countProduct(productQueryParams);
+//分頁
+    Page<Product> page = new Page<>();
+       page.setLimit(limit);
+       page.setOffset(offset);
+       page.setTotal(total);
+       page.setResults(productList);
 
-       List<Product> productList =  productService.getProducts(productQueryParams);
-
-       return ResponseEntity.status(HttpStatus.OK).body(productList);
+       return ResponseEntity.status(HttpStatus.OK).body(page);
     }
 
 

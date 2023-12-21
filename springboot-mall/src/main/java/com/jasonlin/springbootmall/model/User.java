@@ -1,10 +1,14 @@
 package com.jasonlin.springbootmall.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 
 public class User {
     private Integer userId;
     private String email;
+//@JsonIgnore註解表示回傳給前端的值會被隱藏 保護消費者密碼
+    @JsonIgnore
     private  String password;
     private Date createDate;
     private Date lastModifiedDate;
